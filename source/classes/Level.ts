@@ -1,7 +1,20 @@
-const r = (max) => Math.floor(Math.random() * max) + 1
+import { Vector3, Scene, Mesh, Vector } from "babylonjs";
+import { v, up, down, r } from "../utils";
+import { AssetsManager } from "./Assets";
+import { Box } from "./Box";
+import { Map3, Tile, State } from "../types";
 
-class Level {
-    constructor(scene, assets, map) {
+export class Level {
+
+    shape: number[];
+    scene: Scene;
+    grid: Map3; // A remplacer par LevelMap
+    state: Map3;
+    assets: AssetsManager;
+    tiles: Tile[];
+    boxes: Box[];
+    
+    constructor(scene: Scene, assets: AssetsManager, map: Map3) {
         this.shape = map.shape();
         this.scene = scene;
         this.grid = JSON.parse(JSON.stringify(map));
@@ -11,44 +24,47 @@ class Level {
         this.boxes = [];
     }
 
-    forEachGridTile(func) {
+    forEachGridTile(func: (char: string, position: Vector3) => void) {
         for (let y = 0; y < this.grid.length; y++) {
             for (let z = 0; z < this.grid[y].length; z++) {
                 for (let x = 0; x < this.grid[y][z].length; x++) {
                     const char = this.grid[y][z][x];
-                    const position = new BABYLON.Vector3(x, y, -z);
+                    const position = new Vector3(x, y, -z);
                     func(char, position);
                 }
             }
         }
     }
 
-    forEachTile(func) {
+    forEachTile(func: (char: string, position: Vector3) => void) {
         for (let y = 0; y < this.state.length; y++) {
             for (let z = 0; z < this.state[y].length; z++) {
                 for (let x = 0; x < this.state[y][z].length; x++) {
                     const char = this.state[y][z][x];
-                    const position = new BABYLON.Vector3(x, y, -z);
+                    const position = new Vector3(x, y, -z);
                     func(char, position);
                 }
             }
         }
     }
 
-    updateTileState(position, newState) {
-        if(!this.isPositionValid(position)) console.error(`Trying to set state to '${newState}' at invalid position (x: ${position.x}, y: ${position.y}, z: ${position.z}) <=> [${position.y}][${-position.z}][${position.x}]`)
+    updateTileState(position: Vector3, newState: State) {
+        if(!this.isPositionValid(position)) {
+            throw new Error(`Trying to set state to '${newState}' at invalid position ${v(position)}`);
+        }
+        
         this.state[position.y][position.z * -1][position.x] = newState;
     }
 
-    getTileState(position) {
+    getTileState(position: Vector3): State {
         try {
-            return this.state[position.y][position.z * -1][position.x] || " ";
+            return this.state[position.y][position.z * -1][position.x] as State || State.Void;
         } catch {
-            return " ";
+            return State.Void;
         }
     }
 
-    isPositionValid(position) {
+    isPositionValid(position: Vector3): boolean {
         return (
             position.y >= 0 && position.y < this.state.length &&
             position.z * -1 >= 0 && position.z * -1 < this.state[0].length &&
@@ -56,8 +72,10 @@ class Level {
         );
     }
 
-    findBoxByPos(position) {
-        return this.boxes.find(tile => tile.mesh.position.equals(position));
+    findBoxByPos(position: Vector3): Box {
+        const result = this.boxes.find(tile => tile.mesh.position.equals(position));
+        if (!result) throw new Error(`Could not find Box at position ${v(position)}`);
+        return result;
     }
 
     createLevel() {
@@ -76,12 +94,14 @@ class Level {
         });
     }
 
-    getSpawnPoint() {
+    getSpawnPoint(): Vector3 {
         let pos = null;
         
         this.forEachTile((char, position) => {
             if (char === "@") pos = position;
         });
+
+        if(pos == null) throw new Error("A spawnpoint needs to be defined");
 
         return pos;
     }
@@ -93,4 +113,5 @@ class Level {
         this.boxes.forEach(box => box.dispose());
         this.boxes = [];
     }
+    
 }

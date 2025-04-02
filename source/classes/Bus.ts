@@ -1,18 +1,21 @@
-class Bus {
+export class EventBus {
+
+  listeners: { [key: string]: Function[] };
+  
   constructor() {
     this.listeners = {};
   }
 
-  on(event, callback) {
+  on(event: string, callback: Function) {
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
     this.listeners[event].push(callback);
   }
 
-  emit(event, data) {
+  emit(event: string) {
     if (this.listeners[event]) {
-      this.listeners[event].forEach((callback) => callback(data));
+      this.listeners[event].forEach((callback: Function) => callback());
     }
   }
 }

@@ -1,20 +1,27 @@
-class AssetManager {
-  constructor(scene) {
+import { Scene, TransformNode, SceneLoader, Vector3 } from "babylonjs";
+import "babylonjs-loaders";
+
+export class AssetsManager {
+
+  scene: Scene;
+  assets: { [key: string]: TransformNode };
+  
+  constructor(scene: Scene) {
     this.scene = scene;
     this.assets = {};
   }
 
-  loadAsset(name, filename, path) {
+  loadAsset(name: string, filename: string, path: string): Promise<TransformNode> {
     return new Promise((resolve, reject) => {
       if (this.assets[name]) {
         resolve(this.assets[name]);
         return;
       }
 
-      BABYLON.SceneLoader.ImportMesh("", path, filename, this.scene, 
+      SceneLoader.ImportMesh("", path, filename, this.scene, 
         (meshes) => {
 
-          let rootMesh = new BABYLON.TransformNode(name, this.scene);
+          let rootMesh = new TransformNode(name, this.scene);
           meshes.forEach(mesh => {
             mesh.parent = rootMesh;
           });
@@ -25,7 +32,7 @@ class AssetManager {
           
         }, 
         null, 
-        (_scene, message, exception) => {
+        (_scene: Scene, message: string, exception: DOMException) => {
           reject(message);
           console.error(message, exception);
         }
@@ -33,21 +40,17 @@ class AssetManager {
     });
   }
 
-  createInstance(name, position, stickToGround=true) {
-    if (!this.assets[name]) {
-      console.error(`Asset ${name} not loaded.`);
-      return null;
-    }
+  createInstance(name: string, position: Vector3, stickToGround=true): TransformNode {
+    if (!this.assets[name]) throw new Error(`Asset '${name}' instance could not be loaded.`);
 
     let rootMesh = this.assets[name];
-    let instance = rootMesh.clone(`${name}_instance`);
+    let instance = rootMesh.clone(`${name}_instance`, null);
+    if (!instance) throw new Error(`Asset '${name}' instance could not be cloned.`)
+    
     instance.setEnabled(true);
 
     let childMeshes = instance.getChildMeshes();
-    if (childMeshes.length === 0) {
-      console.error("Instance has no child meshes.");
-      return null;
-    }
+    if (childMeshes.length === 0) throw new Error(`Asset '${name}' instance has no child meshes.`)
 
     childMeshes.forEach(mesh => mesh.isVisible = true);
     
@@ -56,7 +59,8 @@ class AssetManager {
     let minZ = Number.MAX_VALUE, maxZ = Number.MIN_VALUE;
 
     childMeshes.forEach(mesh => {
-      mesh.refreshBoundingInfo(true);
+      mesh.refreshBoundingInfo({});
+      
       let bbox = mesh.getBoundingInfo().boundingBox;
       minX = Math.min(minX, bbox.minimumWorld.x);
       maxX = Math.max(maxX, bbox.maximumWorld.x);
@@ -73,14 +77,13 @@ class AssetManager {
     let scaleX = 1 / sizeX;
     let scaleZ = 1 / sizeZ;
     let scale = Math.min(scaleX, scaleZ);
-    instance.scaling = new BABYLON.Vector3(scale, scale, scale);
+    instance.scaling = new Vector3(scale, scale, scale);
 
     instance.position = position.clone();
     
     if(stickToGround) {
       const normalY = Math.floor(position.y) - 0.5;
       instance.position.y = normalY;
-      instance.normY = normalY;
     }
 
     return instance;

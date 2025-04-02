@@ -2,14 +2,17 @@ import express from "express";
 import fs from "fs";
 const app = express();
 
-app.use(express.static("public"));
+
+app.use("/", express.static("public"));
+app.use("/", express.static("dist"));
+
 app.use("/assets", express.static("assets"));
 
-app.get("/level/:i", (req, res) => {
+app.get("/level/:i", (req: express.Request, res: express.Response) => {
     const path = `/home/runner/workspace/assets/levels/`
     const dir = fs.readdirSync(path);
     
-    const filename = dir[req.params.i - 1];
+    const filename = dir[parseInt(req.params.i) - 1];
     const maxWidth = 10;
 
     try {
@@ -31,7 +34,7 @@ app.get("/level/:i", (req, res) => {
     
 });
 
-app.get("/levels", (req, res) => {
+app.get("/levels", (_req: express.Request, res: express.Response) => {
     const path = `/home/runner/workspace/assets/levels`
     const dir = fs.readdirSync(path);
     res.json({
@@ -40,6 +43,7 @@ app.get("/levels", (req, res) => {
     })
 })
 
-app.listen(3000, () => {
+
+app.listen(2025, () => {
     console.log("Server running on :3000");
 });

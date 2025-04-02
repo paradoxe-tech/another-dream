@@ -1,10 +1,14 @@
-let game = null;
+import { Game } from "./classes/Game";
 
-const url = new URLSearchParams(window.location.search)
-const startLevel = url.has("lvl") ? +(url.get("lvl")) + 1 : 0
+var game: Game;
+
+const url = new URLSearchParams(window.location.search);
+const level = url.get("lvl");
+const startLevel = level ? parseInt(level) + 1 : 0;
 
 window.addEventListener("DOMContentLoaded", () => {
   game = new Game();
+  console.log(game);
 
   game.bus.on("loaded", () => {
     game.playLevel(startLevel);
