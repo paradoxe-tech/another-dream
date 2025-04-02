@@ -77,7 +77,11 @@ class AssetManager {
 
     instance.position = position.clone();
     
-    if(stickToGround) instance.position.y = position.y - 0.5 + (sizeY / 2);
+    if(stickToGround) {
+      const normalY = Math.floor(position.y) - 0.5;
+      instance.position.y = normalY;
+      instance.normY = normalY;
+    }
 
     return instance;
   }

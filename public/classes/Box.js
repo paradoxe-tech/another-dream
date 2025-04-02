@@ -29,7 +29,7 @@ class Box {
         const nextFrontState = this.level.getTileState(nextPosition);
         const nextGroundState = this.level.getTileState(nextGroundPosition);
 
-        if (nextFrontState == "#") return false;
+        if (nextFrontState == "#" || nextFrontState == "X") return false;
 
         if (nextGroundState == " ") {
             this.push(direction.add(down));
