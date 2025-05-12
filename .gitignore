@@ -132,6 +132,13 @@ dist
 assets/*
 public/creator/*
 .replit
-generated-icon.png
-package-lock.json
+*lock*
 *~
+
+brainbranling
+
+
+replit.nix
+stats.txt
+*.sh
+*.png

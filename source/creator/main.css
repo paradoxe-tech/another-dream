@@ -1,0 +1,135 @@
+@font-face {
+  font-family: "HomeVideo";
+  src: url(/assets/fonts/HomeVideo-BLG6G.ttf)
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background-color: black;
+}
+
+html, body, * {
+  font-family: "HomeVideo";
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  height: 100%;
+}
+
+/* LEFT PART : GAME PREVIEW */
+canvas {
+  width: 60%;
+  height: 100%;
+  display: block;
+}
+
+/* RIGHT PART : EDITOR */
+#right {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  justify-content: space-between; 
+  gap: 10px; 
+  padding: 10px; 
+  height: calc(100% - 20px);
+}
+
+/* Tile & layer list */
+#topright {
+  display: flex;  /* Enable flexbox for horizontal layout */
+  flex-direction: row;  /* Align children horizontally */
+  align-items: center;
+  gap: 10px;  /* Optional gap between elements */
+  width: 100%;
+}
+
+/* R.X : ALL LISTS */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  width: fit-content;
+}
+
+li {
+  /*padding: 10px 15px;*/
+  margin: 5px 0;
+  transition: background-color 0.3s;
+  color: white;
+  position: relative;
+}
+
+li.selected {
+  background-color: #0068d6;
+}
+
+/* R.1 : LAYER LIST */
+#layerlist {
+  width: 180px;
+}
+
+/* R.3 : GRID */
+#grid-ctr {
+  width: 100%;
+}
+
+#file-input {
+  display: none;
+}
+
+.msg {
+  text-align: center;
+  color: white;
+}
+
+#buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  color: white;
+}
+
+#left-btns {
+  display: flex;
+  gap: 0.35rem;
+}
+
+#right-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.btn {
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.btn:hover {
+  color: grey;
+}
+
+li.tabbed {
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+li.tabbed:hover:before {
+  content: ">";
+  position: absolute;
+  display: block;
+  left: -15px
+}

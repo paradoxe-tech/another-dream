@@ -6,6 +6,7 @@ export class EventBus {
     this.listeners = {};
   }
 
+  // Add listener to callback array
   on(event: string, callback: Function) {
     if (!this.listeners[event]) {
       this.listeners[event] = [];
@@ -13,9 +14,21 @@ export class EventBus {
     this.listeners[event].push(callback);
   }
 
-  emit(event: string) {
+  // Delete all listeners
+  remove(event: string) {
+    if(this.listeners[event]) this.listeners[event] = [];
+  }
+
+  // Delete all listeners for an event, then add a new one
+  replace(event: string, callback: Function) {
+    this.listeners[event] = [callback];
+  }
+
+  // Trigger event
+  emit(event: string, data: object = {}) {
     if (this.listeners[event]) {
-      this.listeners[event].forEach((callback: Function) => callback());
+      this.listeners[event].forEach((callback: Function) => callback(data));
     }
   }
+  
 }

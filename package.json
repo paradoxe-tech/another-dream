@@ -1,19 +1,28 @@
 {
   "name": "another-dream",
   "version": "1.0.0",
-  "description": "",
+  "description": "Just Another Dream",
   "type": "module",
   "scripts": {
-    "check": "npx tsc",
-    "build": "npx parcel build source/index.html",
-    "serve": "npx tsx server.ts"
+    "check": "npx tsc --outdir .check",
+    "count": "cloc source > .dev/stats.txt",
+    "stats": "cat .dev/stats.txt",
+    "del-game-dist": "sh ./.dev/del-game-dist.sh",
+    "del-creator-dist": "rm -rf dist/creator",
+    "build-game": "npm run count && npm run del-game-dist && npx parcel build source/index.html",
+    "build-creator": "npm run count && npm run del-creator-dist && npx parcel build source/creator/index.html --dist-dir dist/creator --public-url /creator/",
+    "build-all": "npm run build-game && npm run build-creator",
+    "serve": "npx tsx server.ts",
+    "prod": "npm run build-all && npm run serve"
   },
-  "author": "",
+  "author": "Just Another Dreamteam",
   "license": "ISC",
   "dependencies": {
     "babylonjs": "^8.0.2",
+    "babylonjs-gui": "^8.7.0",
     "babylonjs-loaders": "^8.0.2",
     "express": "^4.21.2",
+    "node": "^23.11.0",
     "node-fetch": "^3.3.1"
   },
   "devDependencies": {
@@ -33,6 +42,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "string_decoder": "^1.3.0",
+    "svgo": "^3.3.2",
     "tsx": "^4.7.1",
     "typescript": "^5.8.2",
     "url": "^0.11.4",
