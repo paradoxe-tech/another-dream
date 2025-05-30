@@ -5,15 +5,13 @@
   "type": "module",
   "scripts": {
     "check": "npx tsc --outdir .check",
-    "count": "cloc source > .dev/stats.txt",
-    "stats": "cat .dev/stats.txt",
-    "del-game-dist": "sh ./.dev/del-game-dist.sh",
-    "del-creator-dist": "rm -rf dist/creator",
-    "build-game": "npm run count && npm run del-game-dist && npx parcel build source/index.html",
-    "build-creator": "npm run count && npm run del-creator-dist && npx parcel build source/creator/index.html --dist-dir dist/creator --public-url /creator/",
-    "build-all": "npm run build-game && npm run build-creator",
-    "serve": "npx tsx server.ts",
-    "prod": "npm run build-all && npm run serve"
+    "clean": "rm -rf dist",
+    "build-game-dev": "npx parcel build source/index.html --no-optimize",
+    "build-game": "npx parcel build source/index.html",
+    "build-creator": "npx parcel build source/creator/index.html --dist-dir dist/creator --public-url /creator/",
+    "build-dev": "npm run build-game-dev && npm run build-creator",
+    "build": "npm run build-game && npm run build-creator",
+    "serve": "npx tsx server.ts"
   },
   "author": "Just Another Dreamteam",
   "license": "ISC",
