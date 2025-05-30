@@ -1,4 +1,4 @@
-import { Vector3, Scene, PointLight } from "babylonjs";
+import { Vector3, Scene, PointLight, PBRMaterial, Animation } from "babylonjs";
 import { v, nightmareOffset, up } from "@/shared/vectors";
 import { AssetsManager } from "./Assets";
 import { Box } from "./Box";
@@ -9,19 +9,40 @@ import { Player } from "./Player";
 
 type fState = (state: State, position: Vector3, world: World) => void;
 
+class TileStore {
+    private tiles = new Map<string, Tile>();
+
+    writeTile(i: number, j: number, k: number, l: number, value: Tile) {
+        const key = `${i},${j},${k},${l}`;
+        this.tiles.set(key, value);
+    }
+
+    getTile(i: number, j: number, k: number, l: number): Tile | undefined {
+        const key = `${i},${j},${k},${l}`;
+        return this.tiles.get(key);
+    }
+
+    dispose() {
+        for (const tile of this.tiles.values()) {
+            if (tile?.dispose) tile.dispose();
+        }
+        this.tiles.clear();
+    }
+}
+
 export class Level {
     shape: number[];
     scene: Scene;
     grid: Map3[];
     state: Map3[];
     assets: AssetsManager;
-    tiles: Tile[][];
+    tiles: TileStore;
     boxes: Box[];
     spawnWorld: World;
     bus: EventBus;
     player?: Player;
     additionalLights: PointLight[];
-    
+
     _lMove: [number, State, Vector3, World, Player | Box | null][] = [];
     _currentMove: number = 0;
     _numberLevel: number = 0;
@@ -49,7 +70,7 @@ export class Level {
         this.grid = JSON.parse(JSON.stringify(map));
         this.state = map;
         this.assets = assets;
-        this.tiles = [[], []];
+        this.tiles = new TileStore();
         this.boxes = [];
         this.additionalLights = [];
         this.spawnWorld = spawnWorld;
@@ -151,7 +172,7 @@ export class Level {
         return result;
     }
 
-    createLevel(i:number=0, lbox:Vector3[] = []) {
+    createLevel(i: number = 0, lbox: Vector3[] = []) {
         this._numberLevel = i;
         this._lMove = [];
         this._currentMove = 0;
@@ -167,33 +188,89 @@ export class Level {
                 if (/^\d+$/.test(state)) {
                     const lvl = parseInt(state);
                     console.log(`testing if level ${lvl} is finished`);
-                    if (this.levelsComplete[lvl-1]) {
+                    if (this.levelsComplete[lvl - 1]) {
                         console.log("it is.");
-                        this.createTile("portalFinished", position, world, true, 1, false, true);
+                        this.createTile(
+                            "portalFinished",
+                            position,
+                            world,
+                            true,
+                            1,
+                            false,
+                            true,
+                            0,
+                            true,
+                        );
                     } else {
-                        this.createTile("portal", position, world, true, 1, false, true);
+                        this.createTile(
+                            "portal",
+                            position,
+                            world,
+                            true,
+                            1,
+                            false,
+                            true,
+                            0,
+                            true,
+                        );
                     }
                     this.addLight(position.add(up), world);
                 }
                 if (state === State.Portal) {
-                    this.createTile("portal", position, world, true, 1, false, true);
+                    this.createTile(
+                        "portal",
+                        position,
+                        world,
+                        true,
+                        1,
+                        false,
+                        true,
+                        0,
+                        true,
+                    );
                     this.addLight(position.add(up), world);
                 }
                 if (state === State.PortalRotated) {
-                    this.createTile("portal", position, world, true, 1, false, true, Math.PI / 2);
+                    this.createTile(
+                        "portal",
+                        position,
+                        world,
+                        true,
+                        1,
+                        false,
+                        true,
+                        Math.PI / 2,
+                    ),
+                        true;
                     this.addLight(position.add(up), world);
                 }
                 if (state === State.Rock) {
                     switch (world) {
                         case World.Dream:
-                            this.createTile("rock", position, world, true, 1, false, true);
+                            this.createTile(
+                                "rock",
+                                position,
+                                world,
+                                true,
+                                1,
+                                false,
+                                true,
+                            );
                             break;
                         case World.Nightmare:
-                            this.createTile("grave", position, world, true, 1, false, true);
+                            this.createTile(
+                                "grave",
+                                position,
+                                world,
+                                true,
+                                1,
+                                false,
+                                true,
+                            );
                             break;
                     }
                 }
-                   
+
                 if (state === State.Ground) {
                     if (world === World.Dream) {
                         this.createTile("tile", position, world, false, 1.15);
@@ -204,12 +281,22 @@ export class Level {
                             world,
                             false,
                             1.5,
-                            true
+                            true,
                         );
                     }
                 }
                 if (state === State.Flag) {
-                    this.createTile("flag", position, world, true);
+                    this.createTile(
+                        "flag",
+                        position,
+                        world,
+                        true,
+                        1,
+                        false,
+                        false,
+                        0,
+                        true,
+                    );
                     this.addLight(position.add(up), world);
                 }
                 if (state === State.Box) {
@@ -226,11 +313,11 @@ export class Level {
                 this.forEachTile(buildTilesFromState, World.Dream, true);
             if (this.shape[0] >= 2)
                 this.forEachTile(buildTilesFromState, World.Nightmare, true);
-            
+
             // On ajoute à la main les boites si elles ont bougé dans la world map
-            let j=0;
-            for (j=0; j<lbox.length; j++) {
-                this.updateTileState(lbox[j], State.Box, World.Dream)
+            let j = 0;
+            for (j = 0; j < lbox.length; j++) {
+                this.updateTileState(lbox[j], State.Box, World.Dream);
                 const box = new Box(this, this.scene, lbox[j], World.Dream);
                 this.boxes.push(box);
             }
@@ -257,7 +344,8 @@ export class Level {
         scaleFactor: number = 1.0,
         forgetAboutProportions: boolean = false,
         center: boolean = false,
-        yRotation: number = 0
+        yRotation: number = 0,
+        cloneMaterials: boolean = false,
     ) {
         try {
             const tile = this.assets.createInstance(
@@ -267,11 +355,11 @@ export class Level {
                 scaleFactor,
                 forgetAboutProportions,
                 center,
-                yRotation
+                yRotation,
+                cloneMaterials,
             );
 
-            if (this.tiles[world]) this.tiles[world].push(tile);
-            else this.tiles[world] = [tile];
+            this.tiles.writeTile(world, position.y, position.z, position.x, tile);
         } catch (err) {
             throw new GameError(
                 `Unable to create Tile (Asset '${assetName}' Instance)`,
@@ -282,18 +370,18 @@ export class Level {
     }
 
     getSpawnPoint(world: World): Vector3 {
-
         let pos = null;
-        
+
         if (this._numberLevel != 0) {
             this.forEachTile(
-                (state: State, position : Vector3) => {
+                (state: State, position: Vector3) => {
                     if (/^\d+$/.test(state)) {
-                        if (parseInt(state) == this._numberLevel) pos = position;
+                        if (parseInt(state) == this._numberLevel)
+                            pos = position;
                     }
                 },
                 world,
-                true
+                true,
             );
         } else {
             this.forEachTile(
@@ -304,7 +392,7 @@ export class Level {
                 true,
             );
         }
-        
+
         if (pos == null) {
             throw new GameError("A spawnpoint needs to be defined", this.bus);
         }
@@ -322,10 +410,7 @@ export class Level {
     }
 
     dispose() {
-        this.tiles.forEach((world: Tile[]) =>
-            world.forEach((tile: Tile) => tile.dispose()),
-        );
-        this.tiles = [];
+        this.tiles.dispose();
 
         this.boxes.forEach((box: Box) => box.dispose());
         this.boxes = [];
@@ -345,7 +430,7 @@ export class Level {
     }
 
     backMove() {
-        if (this._currentMove == 0)  {
+        if (this._currentMove == 0) {
             return;
         }
         while (
@@ -355,12 +440,16 @@ export class Level {
             const move = this._lMove.pop();
             if (!move) {
                 console.log("Hmmm, ptite erreur");
-                return ;
-            };
+                return;
+            }
             if (move[1] == State.Player) {
                 // Remet le joueur à sa place et switch si besoin
                 if (move[4]) {
-                    this.bus.emit("move", {oldPos : move[4].getPosition(), newPos : move[2], anim:false});
+                    this.bus.emit("move", {
+                        oldPos: move[4].getPosition(),
+                        newPos: move[2],
+                        anim: false,
+                    });
                     if (move[3] != move[4].world) {
                         move[4].setPosition(move[2], move[3]);
                         this.bus.emit("backWorld");
@@ -412,5 +501,61 @@ export class Level {
             if (path[i] == 3) console.log("RIGHT");
         }
         console.log("Fin du path");
+    }
+
+    setAlpha(
+        position: Vector3,
+        alpha: number,
+        world: World = World.Dream,
+        fallback = false,
+    ) {
+        const tile = this.tiles.getTile(world, position.y, position.z, position.x);
+        if (!tile) return;
+        const meshes = tile.getChildMeshes();
+        if (!meshes) return;
+        let mesh;
+        if (meshes.length > 1) {
+            mesh = meshes[1];
+        } else {
+            mesh = meshes[0];
+        }
+        if (!mesh) return;
+        const mat = mesh.material;
+        if (!mat) return;
+
+        mat.transparencyMode = PBRMaterial.MATERIAL_ALPHABLEND;
+
+        const animation = new Animation(
+            "alphaAnim",
+            "alpha",
+            60,
+            Animation.ANIMATIONTYPE_FLOAT,
+            Animation.ANIMATIONLOOPMODE_CONSTANT,
+        );
+
+        const keys = [
+            { frame: 0, value: mat.alpha }, // current alpha
+            { frame: 20, value: alpha }, // new alpha
+        ];
+
+        animation.setKeys(keys);
+
+        const easing = new BABYLON.SineEase();
+        easing.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+        animation.setEasingFunction(easing);
+
+        // Apply animation to material
+        mat.animations = [animation];
+        const an = this.scene.beginAnimation(mat, 0, 20, false);
+        an.onAnimationEnd = () => {
+            if (alpha === 1) {
+                mat.transparencyMode = PBRMaterial.MATERIAL_OPAQUE;
+            }
+            if (fallback) {
+                sleep(1000);
+                mat.transparencyMode = PBRMaterial.MATERIAL_OPAQUE;
+                mat.alpha = 1;
+            }
+        };
     }
 }

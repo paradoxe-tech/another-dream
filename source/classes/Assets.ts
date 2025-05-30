@@ -4,6 +4,8 @@ import {
   SceneLoader,
   Vector3,
   AnimationGroup,
+  PBRMaterial,
+  Animation
 } from "babylonjs";
 import { EventBus } from "./Bus";
 import { GameError } from "./Error";
@@ -88,7 +90,8 @@ export class AssetsManager {
     scaleFactor: number = 1.0,
     forgetAboutProportions: boolean = false,
     center: boolean = false,
-    yRotation: number = 0
+    yRotation: number = 0,
+    cloneMaterials: boolean = false
   ): TransformNode {
     return this.createSingleInstance(
       `${name}-${r(this.groups[name])}`,
@@ -97,7 +100,8 @@ export class AssetsManager {
       scaleFactor,
       forgetAboutProportions,
       center,
-      yRotation
+      yRotation,
+      cloneMaterials
     );
   }
 
@@ -108,7 +112,8 @@ export class AssetsManager {
     scaleFactor: number = 1.0,
     forgetAboutProportions: boolean = false,
     center: boolean = false,
-    yRotation: number = 0
+    yRotation: number = 0,
+    cloneMaterials: boolean = false
   ): TransformNode {
     if (!this.assets[name])
       throw new GameError(
@@ -155,6 +160,12 @@ export class AssetsManager {
       minZ = Math.min(minZ, bbox.minimumWorld.z);
       maxZ = Math.max(maxZ, bbox.maximumWorld.z);
       centerOffset = bbox.centerWorld;
+
+      if (cloneMaterials) {
+        if (mesh.material) {
+            mesh.material = mesh.material.clone(`${mesh.name}_${mesh.uniqueId}_mat`);
+        }
+      }
     });
 
     let sizeX = maxX - minX;

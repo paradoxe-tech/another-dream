@@ -104,7 +104,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   game.bus.on("addMove", (obj) => {
-    //console.log("On ajoute le move", obj.move, obj.tileState, obj.position, obj.world, obj.ref);
     game.level.addMove(
       obj.move,
       obj.tileState,

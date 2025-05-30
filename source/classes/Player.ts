@@ -124,21 +124,27 @@ export class Player {
         
         if (/^\d+$/.test(frontState)) {
             // make UI element "enter level" appear
+            this.level.setAlpha(frontPosition, 0.3);
             this.bus.emit("changeLevelPossible", {level: parseInt(frontState)});
             this._lastVisitedIsPortal = true;
         } else {
             // make UI element "enter level" disappear
             if (this._lastVisitedIsPortal) {
+                this.level.setAlpha(position, 1);
                 this.bus.emit("changeLevelNotPossible");
             }
             this._lastVisitedIsPortal = false;
         }
         
         if (frontState === State.Flag) {
+            this.level.setAlpha(frontPosition, 0.3, this.world, true);
             this._willChange = true;
             this.bus.emit("completeLevel");
         }
-        if (frontState === State.Portal || frontState === State.PortalRotated) this._willSwitch = true;
+        if (frontState === State.Portal || frontState === State.PortalRotated) {
+            this.level.setAlpha(frontPosition, 0.3, this.world, true);
+            this._willSwitch = true;
+        }
         if (frontState === State.Box) {
             const box = this.level.findBoxByPos(frontPosition);
             const hasBeenPushed = box.tryToPush(direction);
