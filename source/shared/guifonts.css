@@ -1,0 +1,42 @@
+@font-face {
+    font-family: 'KenneyInput';
+    src: url('/assets/fonts/KenneyInputKeyboardMouse.eot');
+    src: url('/assets/fonts/KenneyInputKeyboardMouse.eot?#iefix') format('embedded-opentype'),
+        url('/assets/fonts/KenneyInputKeyboardMouse.woff2') format('woff2'),
+        url('/assets/fonts/KenneyInputKeyboardMouse.woff') format('woff'),
+        url('/assets/fonts/KenneyInputKeyboardMouse.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/*
+@font-face {
+    font-family: 'Birdy';
+    src: url('/assets/fonts/BirdyGamePersonalUseOnly.woff2') format('woff2'),
+        url('/assets/fonts/BirdyGamePersonalUseOnly.woff') format('woff'),
+        url('/assets/fonts/BirdyGamePersonalUseOnly.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+*/
+
+@font-face {
+    font-family: 'DreamyLand';
+    src: url('/assets/fonts/Dreamy-Land-Medium.eot');
+    src: url('/assets/fonts/Dreamy-Land-Medium.eot?#iefix') format('embedded-opentype'),
+        url('/assets/fonts/Dreamy-Land-Medium.woff2') format('woff2'),
+        url('/assets/fonts/Dreamy-Land-Medium.woff') format('woff'),
+        url('/assets/fonts/Dreamy-Land-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+
+.nodisplay {
+  display: none;
+}
+

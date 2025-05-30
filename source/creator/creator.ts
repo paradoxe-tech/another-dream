@@ -45,6 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // Create and setup game instance
   updateMsg("Creating game preview...");  
   game = new CreatorGame(stateArray);
+  (window as any).game = game;
   setupGameListeners();
   // Setup buttons and file input
   setupEventListeners();
@@ -83,6 +84,48 @@ function setupGameListeners() {
     updateMsgWithCurrentWorld();
   });
 
+  game.bus.on("addMove", (obj) => {
+    //console.log("On ajoute le move", obj.move, obj.tileState, obj.position, obj.world, obj.ref);
+    game.level.addMove(obj.move, obj.tileState, obj.position, obj.world, obj.ref);
+  })
+
+  game.bus.on("back", () => {
+    if (!game.player) return;
+    if (game.player._queue != 0 || !game.player._canMove) return;
+    game.level.backMove();
+  })
+
+  game.bus.on("backWorld", () => {
+    game.backWorld();
+  });
+
+  game.bus.on("addQueue", ()=> {
+    if (!game.player) return;
+    game.player.queue = 1;
+  });
+
+  game.bus.on("removeQueue", ()=> {
+    if (!game.player) return;
+    game.player.queue = -1;
+  });
+
+  game.bus.on("resetCam", ()=> {
+    game.resetCamera();
+  });
+
+  game.bus.on("path", ()=> {
+    if (!game.player) return ;
+    game.level.getPath(game.player) ;
+  });
+
+  game.bus.on("shake", () => {
+    game.cameraShake();
+  });
+
+  game.bus.on("sound", (name: string) => {
+    game.launchSound(name);
+  });
+  
   game.bus.on("nextlevel", () => {
     updateMsg("Level exited. Press Play to restart");
   });

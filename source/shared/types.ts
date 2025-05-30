@@ -1,4 +1,4 @@
-import { TransformNode, Nullable, StandardMaterial } from "babylonjs";
+import { TransformNode, Nullable, BaseTexture } from "babylonjs";
 
 export enum State {
   Box = "$",
@@ -9,7 +9,9 @@ export enum State {
   Rock = "X",
   Flag = ".",
   Portal = "§",
+  PortalRotated = "µ",
   Player = "P",
+  Level = "L"
 }
 
 export type Map3 = State[][][];
@@ -22,10 +24,12 @@ export enum World {
   Nightmare,
 };
 
-export type SkyBoxMaterialArray = {dream: StandardMaterial | null, nightmare: StandardMaterial | null};
+
+export type EnvTextureArray = {dream: BaseTexture | null, nightmare: BaseTexture | null};
+
 export const WorldKey = {
-    Dream : "dream" as keyof SkyBoxMaterialArray,
-    Nightmare : "nightmare" as keyof SkyBoxMaterialArray
+    Dream : "dream" as keyof EnvTextureArray,
+    Nightmare : "nightmare" as keyof EnvTextureArray
 };
 
 export type InputDirection = {x: number, y: number};

@@ -1,5 +1,5 @@
-import { Vector3, Scene } from "babylonjs";
-import { v, nightmareOffset } from "@/shared/vectors";
+import { Vector3, Scene, PointLight } from "babylonjs";
+import { v, nightmareOffset, up } from "@/shared/vectors";
 import { AssetsManager } from "./Assets";
 import { Box } from "./Box";
 import { GameError } from "./Error";
@@ -19,20 +19,25 @@ export class Level {
     boxes: Box[];
     spawnWorld: World;
     bus: EventBus;
-    // J'add ça pour pouvoir retourner en arrière
-    _lMove: [number,State,Vector3,World,Player|Box|null][] = [] ;
-    _currentMove: number = 0;
+    player?: Player;
+    additionalLights: PointLight[];
     
+    _lMove: [number, State, Vector3, World, Player | Box | null][] = [];
+    _currentMove: number = 0;
+    _numberLevel: number = 0;
+
+    levelsComplete: boolean[] = [];
+
     constructor(
-        scene: Scene, 
+        scene: Scene,
         assets: AssetsManager,
-        maps: Map3[], 
-        bus: EventBus, 
-        spawnWorld: World
+        map: Map3[],
+        bus: EventBus,
+        spawnWorld: World,
     ) {
         this.bus = bus;
-        this.shape = maps.shape();
-        
+        this.shape = map.shape();
+
         if (this.shape.length !== 4) {
             throw new GameError(
                 `LevelMap should be of dimension 4, found shape ${this.shape}`,
@@ -41,23 +46,26 @@ export class Level {
         }
 
         this.scene = scene;
-        this.grid = JSON.parse(JSON.stringify(maps));
-        this.state = maps;
+        this.grid = JSON.parse(JSON.stringify(map));
+        this.state = map;
         this.assets = assets;
         this.tiles = [[], []];
         this.boxes = [];
+        this.additionalLights = [];
         this.spawnWorld = spawnWorld;
     }
 
     // Pour trouver la position alternative avec le bon y
     getDroppablePosition(position: Vector3, world: World): Vector3 {
-        /* Donc là en gros le concept c'est que tu renvoies la première position libre (çad la plus basse). Comme ça si ya une caisse, ou jsp quoi bah hop t'es dessus */
         const x = position.x;
         const z = position.z;
         let y = 0;
         if (world == World.Nightmare) y = nightmareOffset.y;
 
-        while (this.getTileState(new Vector3(x, y, z), world) == State.Box || this.getTileState(new Vector3(x, y, z), world) == State.Ground) {
+        while (
+            this.getTileState(new Vector3(x, y, z), world) == State.Box ||
+            this.getTileState(new Vector3(x, y, z), world) == State.Ground
+        ) {
             y++;
         }
         return new Vector3(x, y, z);
@@ -143,27 +151,74 @@ export class Level {
         return result;
     }
 
-    createLevel() {
+    createLevel(i:number=0, lbox:Vector3[] = []) {
+        this._numberLevel = i;
+        this._lMove = [];
+        this._currentMove = 0;
+        this.boxes = [];
         try {
             this.state = JSON.parse(JSON.stringify(this.grid));
 
-            const buildTilesFromState: fState = (state: State, position: Vector3, world: World) => {
-                if (state === State.Portal)
-                    this.createTile("portal", position, world, true);
-                if (state === State.Rock)
-                    this.createTile("rock", position, world, true);
+            const buildTilesFromState: fState = (
+                state: State,
+                position: Vector3,
+                world: World,
+            ) => {
+                if (/^\d+$/.test(state)) {
+                    const lvl = parseInt(state);
+                    console.log(`testing if level ${lvl} is finished`);
+                    if (this.levelsComplete[lvl-1]) {
+                        console.log("it is.");
+                        this.createTile("portalFinished", position, world, true, 1, false, true);
+                    } else {
+                        this.createTile("portal", position, world, true, 1, false, true);
+                    }
+                    this.addLight(position.add(up), world);
+                }
+                if (state === State.Portal) {
+                    this.createTile("portal", position, world, true, 1, false, true);
+                    this.addLight(position.add(up), world);
+                }
+                if (state === State.PortalRotated) {
+                    this.createTile("portal", position, world, true, 1, false, true, Math.PI / 2);
+                    this.addLight(position.add(up), world);
+                }
+                if (state === State.Rock) {
+                    switch (world) {
+                        case World.Dream:
+                            this.createTile("rock", position, world, true, 1, false, true);
+                            break;
+                        case World.Nightmare:
+                            this.createTile("grave", position, world, true, 1, false, true);
+                            break;
+                    }
+                }
+                   
                 if (state === State.Ground) {
                     if (world === World.Dream) {
                         this.createTile("tile", position, world, false, 1.15);
                     } else {
-                        this.createTile("nightmareTile", position, world, false, 1.1);
+                        this.createTile(
+                            "nightmareTile",
+                            position,
+                            world,
+                            false,
+                            1.5,
+                            true
+                        );
                     }
                 }
-                if (state === State.Flag)
+                if (state === State.Flag) {
                     this.createTile("flag", position, world, true);
+                    this.addLight(position.add(up), world);
+                }
                 if (state === State.Box) {
-                    const box = new Box(this, this.scene, position, world);
-                    this.boxes.push(box);
+                    if (lbox.length == 0) {
+                        const box = new Box(this, this.scene, position, world);
+                        this.boxes.push(box);
+                    } else {
+                        this.updateTileState(position, State.Void, world);
+                    }
                 }
             };
 
@@ -171,18 +226,48 @@ export class Level {
                 this.forEachTile(buildTilesFromState, World.Dream, true);
             if (this.shape[0] >= 2)
                 this.forEachTile(buildTilesFromState, World.Nightmare, true);
+            
+            // On ajoute à la main les boites si elles ont bougé dans la world map
+            let j=0;
+            for (j=0; j<lbox.length; j++) {
+                this.updateTileState(lbox[j], State.Box, World.Dream)
+                const box = new Box(this, this.scene, lbox[j], World.Dream);
+                this.boxes.push(box);
+            }
         } finally {
             this.bus.emit("loaded");
         }
     }
 
-    createTile(assetName: string, position: Vector3, world: World, grounded: boolean, scaleFactor: number = 1.0) {
+    addLight(pos: Vector3, world: World) {
+        const light = new PointLight(
+            `light-${pos.x}-${pos.y}-${pos.z}`,
+            pos,
+            this.scene,
+        );
+        light.intensity = 3.5;
+        this.additionalLights.push(light);
+    }
+
+    createTile(
+        assetName: string,
+        position: Vector3,
+        world: World,
+        grounded: boolean,
+        scaleFactor: number = 1.0,
+        forgetAboutProportions: boolean = false,
+        center: boolean = false,
+        yRotation: number = 0
+    ) {
         try {
             const tile = this.assets.createInstance(
                 assetName,
                 position,
                 grounded,
-                scaleFactor
+                scaleFactor,
+                forgetAboutProportions,
+                center,
+                yRotation
             );
 
             if (this.tiles[world]) this.tiles[world].push(tile);
@@ -197,16 +282,29 @@ export class Level {
     }
 
     getSpawnPoint(world: World): Vector3 {
+
         let pos = null;
-
-        this.forEachTile(
-            (state: State, position: Vector3) => {
-                if (state === State.SpawnPoint) pos = position;
-            },
-            world,
-            true,
-        );
-
+        
+        if (this._numberLevel != 0) {
+            this.forEachTile(
+                (state: State, position : Vector3) => {
+                    if (/^\d+$/.test(state)) {
+                        if (parseInt(state) == this._numberLevel) pos = position;
+                    }
+                },
+                world,
+                true
+            );
+        } else {
+            this.forEachTile(
+                (state: State, position: Vector3) => {
+                    if (state === State.SpawnPoint) pos = position;
+                },
+                world,
+                true,
+            );
+        }
+        
         if (pos == null) {
             throw new GameError("A spawnpoint needs to be defined", this.bus);
         }
@@ -231,37 +329,88 @@ export class Level {
 
         this.boxes.forEach((box: Box) => box.dispose());
         this.boxes = [];
+
+        this.additionalLights.forEach((l) => l.dispose());
+        this.additionalLights = [];
     }
-    
-    addMove(nb : number, state : State, position : Vector3, world: World, ref:Player|Box|null) {
-       this._lMove.push([nb, state, position, world, ref]);
+
+    addMove(
+        nb: number,
+        state: State,
+        position: Vector3,
+        world: World,
+        ref: Player | Box | null,
+    ) {
+        this._lMove.push([nb, state, position, world, ref]);
     }
 
     backMove() {
-        //console.log("On est dans la fonction, avec le current move = ", this._currentMove, this._lMove[this._lMove.length - 1], this._lMove[this._lMove.length - 1][0]);
-        if (this._currentMove == 0) return;
-        while (this._lMove.length != 0 && this._lMove[this._lMove.length - 1][0] == (this._currentMove-1)) {
-            
-            
-            //console.log("On back le move", this._lMove[this._lMove.length - 1]);
+        if (this._currentMove == 0)  {
+            return;
+        }
+        while (
+            this._lMove.length != 0 &&
+            this._lMove[this._lMove.length - 1][0] == this._currentMove - 1
+        ) {
             const move = this._lMove.pop();
-            if (!move) return;
-            if (move[1] == State.Player) { // Remet le joueur à sa place et switch si besoin
-                if(move[4]) {
+            if (!move) {
+                console.log("Hmmm, ptite erreur");
+                return ;
+            };
+            if (move[1] == State.Player) {
+                // Remet le joueur à sa place et switch si besoin
+                if (move[4]) {
+                    this.bus.emit("move", {oldPos : move[4].getPosition(), newPos : move[2], anim:false});
                     if (move[3] != move[4].world) {
                         move[4].setPosition(move[2], move[3]);
                         this.bus.emit("backWorld");
-                    } 
-                    else move[4].setPosition(move[2], move[3]);
+                    } else move[4].setPosition(move[2], move[3]);
                 }
-                
-            } else if (move[1] == State.Box) { // Remet la boite à sa place
-                if(move[4]) move[4].setPosition(move[2], move[3]);
-            } else if (move[1] == State.Void) { // Réactualise les cases qui étaient vides
+            } else if (move[1] == State.Box) {
+                // Remet la boite à sa place
+                if (move[4]) move[4].setPosition(move[2], move[3]);
+            } else if (move[1] == State.Void) {
+                // Réactualise les cases qui étaient vides
                 this.updateTileState(move[2], State.Void, move[3]);
             }
         }
         this._currentMove--;
     }
 
+    getPath(player: Player) {
+        let i;
+        let path: number[] = [];
+        let pos: Vector3 = this._lMove[0][2];
+        for (i = 1; i < this._lMove.length; i++) {
+            if (this._lMove[i][1] == State.Player) {
+                const newPos = this._lMove[i][2];
+                if (pos.x < newPos.x)
+                    path.push(0); // Droite = 0
+                else if (pos.x > newPos.x)
+                    path.push(2); // Gauche = 2
+                else if (pos.z < newPos.z)
+                    path.push(1); // Haut = 1
+                else if (pos.z > newPos.z) path.push(3); // Bas = 3
+                pos = newPos;
+            }
+        }
+        const newPos = player.getPosition();
+        if (pos.x < newPos.x)
+            path.push(0); // Droite = 0
+        else if (pos.x > newPos.x)
+            path.push(2); // Gauche = 2
+        else if (pos.z < newPos.z)
+            path.push(1); // Haut = 1
+        else if (pos.z > newPos.z) path.push(3); // Bas = 3
+
+        console.log("Path : ", path);
+        for (i = 0; i < path.length; i++) {
+            // Input selon l'angle de caméra initial
+            if (path[i] == 0) console.log("UP");
+            if (path[i] == 1) console.log("LEFT");
+            if (path[i] == 2) console.log("DOWN");
+            if (path[i] == 3) console.log("RIGHT");
+        }
+        console.log("Fin du path");
+    }
 }

@@ -3,3 +3,5 @@ interface Array<T> {
 }
 
 declare function get(url: string): string;
+
+declare async function sleep(ms: number): Promise<void>;

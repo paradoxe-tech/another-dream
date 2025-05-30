@@ -86,12 +86,18 @@ export class AssetsManager {
     position: Vector3,
     stickToGround = true,
     scaleFactor: number = 1.0,
+    forgetAboutProportions: boolean = false,
+    center: boolean = false,
+    yRotation: number = 0
   ): TransformNode {
     return this.createSingleInstance(
       `${name}-${r(this.groups[name])}`,
       position,
       stickToGround,
       scaleFactor,
+      forgetAboutProportions,
+      center,
+      yRotation
     );
   }
 
@@ -100,6 +106,9 @@ export class AssetsManager {
     position: Vector3,
     stickToGround = true,
     scaleFactor: number = 1.0,
+    forgetAboutProportions: boolean = false,
+    center: boolean = false,
+    yRotation: number = 0
   ): TransformNode {
     if (!this.assets[name])
       throw new GameError(
@@ -133,7 +142,9 @@ export class AssetsManager {
     let minZ = Number.MAX_VALUE,
       maxZ = Number.MIN_VALUE;
 
+    let centerOffset = new Vector3(0,0,0);
     childMeshes.forEach((mesh) => {
+      mesh.computeWorldMatrix(true);
       mesh.refreshBoundingInfo({});
 
       let bbox = mesh.getBoundingInfo().boundingBox;
@@ -143,6 +154,7 @@ export class AssetsManager {
       maxY = Math.max(maxY, bbox.maximumWorld.y);
       minZ = Math.min(minZ, bbox.minimumWorld.z);
       maxZ = Math.max(maxZ, bbox.maximumWorld.z);
+      centerOffset = bbox.centerWorld;
     });
 
     let sizeX = maxX - minX;
@@ -150,11 +162,21 @@ export class AssetsManager {
     let sizeY = maxY - minY;
 
     let scaleX = 1 / sizeX;
+    let scaleY = 1 / sizeY;
     let scaleZ = 1 / sizeZ;
-    let scale = Math.min(scaleX, scaleZ) * scaleFactor;
-    instance.scaling = new Vector3(scale, scale, scale);
+    // compress on Y
+    if (forgetAboutProportions) {
+      instance.scaling = new Vector3(scaleX * scaleFactor, scaleY * scaleFactor, scaleX * scaleFactor);
+    } else {
+      let scale = Math.min(scaleX, scaleZ) * scaleFactor;
+      instance.scaling = new Vector3(scale, scale, scale);
+    }
 
-    instance.position = position.clone();
+    if (center) {
+      instance.position = position.clone().subtract(centerOffset.subtract(instance.getAbsolutePosition()));
+    } else {
+      instance.position = position.clone();
+    }
 
     // "C'est voué à être un peu mieux"
     //  - Mathéo Tripnaux-Mangemoilepoiro, 16 avril 2025
@@ -162,6 +184,8 @@ export class AssetsManager {
       const normalY = Math.floor(position.y) - 0.5;
       instance.position.y = normalY;
     }
+
+    instance.rotation.y = yRotation;
 
     return instance;
   }
@@ -175,24 +199,25 @@ export class AssetsManager {
   }
 
   playAnim(asset: string, name: string, stopAll = true, loop = true) {
-    if (!this.animationGroupsByAsset[asset])
-      throw new GameError(
-        `Requesting to play animation group ${name} from ${asset}, but no animation group exist from this asset. :( This is very sad.`,
-        this.bus,
+    if (!this.animationGroupsByAsset[asset]) {
+      console.error(
+        `Requesting to play animation group ${name} from ${asset}, but no animation group exist from this asset. :( This is very sad.`
       );
+      return;
+    }
     
     if (stopAll)
       this.animationGroupsByAsset[asset].forEach((group) => group.stop());
     
     let anim = this.getAnimationGroupByName(asset, name);
     if (!anim) {
-      throw new GameError(
-        `Requesting to play animation group ${name} from ${asset}, but this group does not exist in this asset.`,
-        this.bus,
+      console.error(
+        `Requesting to play animation group ${name} from ${asset}, but this group does not exist in this asset.`
       );
     } else {
       anim.loopAnimation = loop;
       anim.start(true);
     }
   }
+  
 }

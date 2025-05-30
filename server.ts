@@ -3,7 +3,7 @@ import fs from "fs";
 const app = express();
 
 import { Map4, Map3, State } from "./source/shared/types";
-import { levelShape, padLevel } from "./source/shared/utils";
+import { levelShape, levelMapShape, padLevel } from "./source/shared/utils";
 
 const PORT = 8080;
 
@@ -26,7 +26,12 @@ app.get("/level/:i", (req: express.Request, res: express.Response) => {
   }
 
   try {
-    let paddedData = padLevel(data, levelShape);
+    let paddedData: Map4;
+    if (parseInt(req.params.i) == 0) {
+      paddedData = padLevel(data, levelMapShape);
+    } else {
+      paddedData = padLevel(data, levelShape);
+    }
     res.json(paddedData);
   } catch (e) {
     res
@@ -43,6 +48,14 @@ app.get("/levels", (_req: express.Request, res: express.Response) => {
     n: dir.length,
     list: dir,
   });
+});
+
+app.get("/trailer1", (_req: express.Request, res: express.Response) => {
+  res.redirect("https://youtube.com");
+});
+
+app.get("/trailer2", (_req: express.Request, res: express.Response) => {
+  res.redirect("https://youtube.com");
 });
 
 app.listen(PORT, () => {

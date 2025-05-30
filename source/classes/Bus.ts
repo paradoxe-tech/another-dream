@@ -26,9 +26,15 @@ export class EventBus {
 
   // Trigger event
   emit(event: string, data: object = {}) {
+    console.debug(`Event trigger on game bus : ${event} with data ${data || ""}`);
     if (this.listeners[event]) {
       this.listeners[event].forEach((callback: Function) => callback(data));
     }
   }
-  
+
+  // for debug purpose : list handlers
+  list(event: string) {
+    console.log(`Handlers connected to ${event} :`);
+    console.dir(this.listeners[event]);
+  }
 }
