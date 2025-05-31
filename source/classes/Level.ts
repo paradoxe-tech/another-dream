@@ -507,7 +507,7 @@ export class Level {
         position: Vector3,
         alpha: number,
         world: World = World.Dream,
-        fallback = false,
+        fallback = 0,
     ) {
         const tile = this.tiles.getTile(world, position.y, position.z, position.x);
         if (!tile) return;
@@ -551,8 +551,8 @@ export class Level {
             if (alpha === 1) {
                 mat.transparencyMode = PBRMaterial.MATERIAL_OPAQUE;
             }
-            if (fallback) {
-                sleep(1000);
+            if (fallback > 0) {
+                sleep(fallback);
                 mat.transparencyMode = PBRMaterial.MATERIAL_OPAQUE;
                 mat.alpha = 1;
             }

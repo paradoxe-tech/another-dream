@@ -31,12 +31,18 @@ export class KeyboardInput {
         case "Space":
           this._bus.emit("changeLevelRequest");
           break;
+        /*
+        DEBUG
         case "p":
           this._bus.emit("previouslevel");
           break;
         case "n":
           this._bus.emit("nextlevel");
           break;
+        case "a":
+          this._bus.emit("path");
+          break;
+        */
         case "r":
           this._bus.emit("restart");
           break;
@@ -45,9 +51,6 @@ export class KeyboardInput {
           break;
         case "c":
           this._bus.emit("resetCam");
-          break;
-        case "a":
-          this._bus.emit("path");
           break;
         case "Escape":
         case "m": 

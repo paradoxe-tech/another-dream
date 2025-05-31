@@ -137,12 +137,12 @@ export class Player {
         }
         
         if (frontState === State.Flag) {
-            this.level.setAlpha(frontPosition, 0.3, this.world, true);
+            this.level.setAlpha(frontPosition, 0.3, this.world, 5000);
             this._willChange = true;
             this.bus.emit("completeLevel");
         }
         if (frontState === State.Portal || frontState === State.PortalRotated) {
-            this.level.setAlpha(frontPosition, 0.3, this.world, true);
+            this.level.setAlpha(frontPosition, 0.3, this.world, 1000);
             this._willSwitch = true;
         }
         if (frontState === State.Box) {
