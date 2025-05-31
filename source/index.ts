@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
   (window as any).game = game;
 
   game.bus.on("preloaded", () => {
+    /*
     const levelsCompleteStr = localStorage.getItem("levelsComplete") || null;
     if (levelsCompleteStr) {
       const levelsComplete = JSON.parse(levelsCompleteStr);
@@ -43,6 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       game.bus.emit("levelCntVisible");
     }
+    */
     game.playLevel(startLevel);
     const levelCnt = game.levelsComplete.filter(i => i === true).length;
     game.bus.emit("levelCntUpdate", {levelCnt: levelCnt, totalLevelCnt: game.levelsComplete.length, levelsComplete: game.levelsComplete});
@@ -148,7 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   game.bus.on("completeLevel", () => {
     game.levelsComplete[game.levelIndex - 1] = true;
-    localStorage.setItem("levelsComplete", JSON.stringify(game.levelsComplete));
+    //localStorage.setItem("levelsComplete", JSON.stringify(game.levelsComplete));
     const levelCnt = game.levelsComplete.filter(i => i === true).length;
     game.bus.emit("levelCntUpdate", {levelCnt: levelCnt, totalLevelCnt: game.levelsComplete.length, levelsComplete: game.levelsComplete});
   });

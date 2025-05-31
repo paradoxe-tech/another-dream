@@ -448,7 +448,7 @@ export class Level {
                     this.bus.emit("move", {
                         oldPos: move[4].getPosition(),
                         newPos: move[2],
-                        anim: false,
+                        anim: true,
                     });
                     if (move[3] != move[4].world) {
                         move[4].setPosition(move[2], move[3]);

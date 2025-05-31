@@ -15,7 +15,7 @@ Vous voici dans un monde onirique, où vous devrez vous créer un chemin pour pa
 
 Le jeu est hébergé pendant toute la durée du concours à l'adresse [https://another-dream.replit.app](https://another-dream.replit.app). Ce lien permet de jouer directement dans votre navigateur, sans installation. Par la suite, il sera déposé sur la plateforme gratuite [itch.io](https://itch.io), afin de le rendre accessible à un plus grand nombre. Pour plus d'informations sur le fonctionnement du jeu, n'hésitez pas à vous reporter au fichier [DOCS.md](https://github.com/paradoxe-tech/another-dream/blob/main/DOCS.md) de ce dépôt, de préférence après avoir joué au jeu pour profiter au maximum de l'immersion !
 
-Le jeu est bien sûr jouable sur ordinateur, mais l'est également sur téléphone et tablette, où l'interface et les commandes sont adaptées aux écrans tactiles. Il serait donc aisé de le packager sous forme d'application Android ou iOS.
+Nous sommes également en train de rendre le jeu responsive, afin de permettre aux utilisateurs sur téléphones et tablettes d'en profiter également.
 
 ## Contenus additionnels
 

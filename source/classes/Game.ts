@@ -183,7 +183,7 @@ export class Game {
 
             this.volCloudParticles[i].color1 = minColor[i];
             this.volCloudParticles[i].color2 = maxColor[i];
-            this.volCloudParticles[i].colorDead = new Color4(0.9, 0.9, 0.9, 0.3);
+            this.volCloudParticles[i].colorDead = minColor[i];
             this.volCloudParticles[i].minSize = 3.5;
             this.volCloudParticles[i].maxSize = 5.0;
             this.volCloudParticles[i].minLifeTime = 15;
@@ -398,15 +398,15 @@ export class Game {
 
         this._inputController?.updateCamera(this.camera, this.canvas);
         this.fade(false);
-        this.bus.on("move", (pos) => this.moveCamera(pos.oldPos, pos.newPos));
+        this.bus.on("move", (pos) => this.moveCamera(pos.oldPos, pos.newPos, pos.anim? true : false));
     }
 
-    moveCamera(oldPos:Vector3, newPos : Vector3, anim=true) {
+    moveCamera(oldPos:Vector3, newPos : Vector3, anim : boolean) {
         if (!this.camera) return;
         if (oldPos.z != newPos.z) {
             const z = newPos.z - oldPos.z;
             
-            if (!anim) {
+            if (anim) {
                 this.camera.target.z += z;
                 return ;
             }
