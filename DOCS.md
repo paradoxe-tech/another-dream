@@ -1,15 +1,22 @@
 ## Documentation
 
-Le contrôle du personnage est basé sur les flèches du clavier. Cependant, l'orientation de la caméra étant modifiable, les inputs sont adaptatifs pour toujours suivre votre intuition et augmenter la jouabilité !
-
 L'objectif principal de Another Dream est simple : atteindre le drapeau. Mais attention, ce ne sera pas toujours aussi facile ! Vous pouvez déplacer les caisses pour débloquer des passages ou créer des plateformes, toutefois, une restriction s'applique : vous pouvez déplacer deux caisses à la fois, mais pas plus.
 
-Un autre élément clé du jeu réside dans les portails. Ceux-ci vous permettent de changer de monde, passant de rêve à cauchemar. Ces mondes parallèles sont différents, offrant des mécanismes et des défis uniques qui enrichissent l'expérience de jeu. Il vous faudra peut-être traverser plusieurs portails pour trouver la meilleure route vers le drapeau !
+On peut se déplacer avec les flèches du clavier, bouger l'angle de la caméra avec la souris et la déplacer avec le clic droit. On également plusieurs touches utiles. La touche B permet d'annuler un mouvement, la touche R de recommencer un niveau, la touche M de revenir au niveau central et la touche C de recentrer la caméra.
+
+Le contrôle du personnage est basé sur les flèches du clavier. Cependant, l'orientation de la caméra étant modifiable, les inputs sont adaptatifs pour toujours suivre votre intuition et augmenter la jouabilité. Cela est modélisé grâce à un icone en bas à gauche de l'écran qui permet de s'y retrouver si l'on se perd dans les contrôles.
+
+Le jeu est composé de 20 niveaux de difficultés croissantes et est divisé en 2 parties. La première est la base du jeu, puis la 2ème commence avec l'introduction de la mécanique de monde cauchemar, qui consiste en des portails permettant de passer de l'un à l'autre, et ainsi déplacer les caisses dans 2 mondes différents pour débbloquer de nouvelles possibilités.
+Tout ces niveaux sont accessibles depuis un niveau central, qui sert de lien entre les niveaux et de marqueur de progression.
+
+Le jeu comporte également une musique libre de droit (faite par Cleyton Kauffman), choisie pour son côté planant et calme qui s'intègre bien dans le thème et le jeu, et quelques bruitages.
+
+Le jeu possède aussi une interface pour créer les niveaux et de les tester, c'est principalement de cette manière qu'ils ont été créés. L'interface est trouvable sur ce lien. Malheureusement, elle est buggé et pas totalement responsive, elle n'était pas destiné à être publié mais nous jugeons que cela fait quand même un petit bonus sympa.
 
 
 ## Gameplay
 
-L'objectif de cette partie est de présenter le processus créatif derrière le jeu et d'en expliquer les choix. Tout cela n'est bien sur des réflexions et non des affirmations, le but n'est pas d'enseigner quelque chose mais bien de partager notre expériences et nos retours. J'espère que ça intéressera ou même que enrichira la réflexion d'autres personnes dans leur developpement.
+L'objectif de cette partie est de présenter le processus créatif derrière le jeu et d'en expliquer les choix. Tout cela n'est bien sur des réflexions et non des affirmations, le but n'est pas d'enseigner quelque chose mais bien de partager notre expériences et nos retours. J'espère que ça intéressera ou même que ça enrichira la réflexion d'autres personnes dans leur developpement.
 
 ### L'idée d'origine
 

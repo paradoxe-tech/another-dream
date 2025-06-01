@@ -13,7 +13,7 @@ Vous voici dans un monde onirique, où vous devrez vous créer un chemin pour pa
 
 ## Comment y jouer ?
 
-Le jeu est hébergé pendant toute la durée du concours à l'adresse [https://another-dream.replit.app](https://another-dream.replit.app). Ce lien permet de jouer directement dans votre navigateur, sans installation. Par la suite, il sera déposé sur la plateforme gratuite [itch.io](https://itch.io), afin de le rendre accessible à un plus grand nombre. Pour plus d'informations sur le fonctionnement du jeu, n'hésitez pas à vous reporter au fichier [DOCS.md](https://github.com/paradoxe-tech/another-dream/blob/main/DOCS.md) de ce dépôt, de préférence après avoir joué au jeu pour profiter au maximum de l'immersion !
+Le jeu est hébergé pendant toute la durée du concours à l'adresse [https://vps111999.serveur-vps.net](https://vps111999.serveur-vps.net). Ce lien permet de jouer directement dans votre navigateur, sans installation. Par la suite, il sera déposé sur la plateforme gratuite [itch.io](https://itch.io), afin de le rendre accessible à un plus grand nombre. Pour plus d'informations sur le fonctionnement du jeu, n'hésitez pas à vous reporter au fichier [DOCS.md](https://github.com/paradoxe-tech/another-dream/blob/main/DOCS.md) de ce dépôt, de préférence après avoir joué au jeu pour profiter au maximum de l'immersion !
 
 Nous sommes également en train de rendre le jeu responsive, afin de permettre aux utilisateurs sur téléphones et tablettes d'en profiter également.
 
@@ -21,9 +21,8 @@ Nous sommes également en train de rendre le jeu responsive, afin de permettre a
 
 Deux vidéos de présentation sont disponibles :
 - [Un trailer](
-https://another-dream.replit.app/trailer1), qui présente le jeu en adoptant un style promotionnel ;
-- et [une vidéo plus technique](
-https://another-dream.replit.app/trailer2), qui se focalise davantage sur la décomposition du gameplay et de l'interface du jeu, en rentrant plus dans les détails.
+https://vps111999.serveur-vps.net/trailer1), qui présente le jeu en adoptant un style promotionnel ;
+- et [une vidéo plus technique](https://vps111999.serveur-vps.net/trailer2), qui se focalise davantage sur la décomposition du gameplay et de l'interface du jeu, en rentrant plus dans les détails.
 
 ## Crédits 
 

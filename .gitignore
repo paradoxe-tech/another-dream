@@ -140,3 +140,5 @@ replit.nix
 stats.txt
 *.sh
 *.png
+
+sync_serv.sh
