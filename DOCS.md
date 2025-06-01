@@ -6,15 +6,15 @@ On peut se déplacer avec les flèches du clavier, bouger l'angle de la caméra 
 
 Le contrôle du personnage est basé sur les flèches du clavier. Cependant, l'orientation de la caméra étant modifiable, les inputs sont adaptatifs pour toujours suivre votre intuition et augmenter la jouabilité. Cela est modélisé grâce à un icone en bas à gauche de l'écran qui permet de s'y retrouver si l'on se perd dans les contrôles.
 
-Le jeu est composé de 20 niveaux de difficultés croissantes et est divisé en 2 parties. La première est la base du jeu, puis la 2ème commence avec l'introduction de la mécanique de monde cauchemar, qui consiste en des portails permettant de passer de l'un à l'autre, et ainsi déplacer les caisses dans 2 mondes différents pour débbloquer de nouvelles possibilités.
+Le jeu est composé de 20 niveaux de difficultés croissantes et est divisé en 2 parties. La première est la base du jeu, puis la 2ème commence avec l'introduction de la mécanique de monde cauchemar, qui consiste en des portails permettant de passer de l'un à l'autre, et ainsi déplacer les caisses dans 2 mondes différents pour débloquer de nouvelles possibilités.
 Tout ces niveaux sont accessibles depuis un niveau central, qui sert de lien entre les niveaux et de marqueur de progression.
 
 Le jeu comporte également une musique libre de droit (faite par Cleyton Kauffman), choisie pour son côté planant et calme qui s'intègre bien dans le thème et le jeu, et quelques bruitages.
 
-Le jeu possède aussi une interface pour créer les niveaux et de les tester, c'est principalement de cette manière qu'ils ont été créés. L'interface est trouvable sur ce lien. Malheureusement, elle est buggé et pas totalement responsive, elle n'était pas destiné à être publié mais nous jugeons que cela fait quand même un petit bonus sympa.
+Le jeu possède aussi une interface pour créer les niveaux et de les tester, c'est principalement de cette manière qu'ils ont été créés. L'interface est trouvable en tapant /creator derrière l'url du jeu. Malheureusement, elle est buggée et pas totalement responsive, elle n'était pas destiné à être publiée mais nous jugeons que cela fait quand même un petit bonus sympa.
 
 
-## Gameplay
+## Processus créatif
 
 L'objectif de cette partie est de présenter le processus créatif derrière le jeu et d'en expliquer les choix. Tout cela n'est bien sur des réflexions et non des affirmations, le but n'est pas d'enseigner quelque chose mais bien de partager notre expériences et nos retours. J'espère que ça intéressera ou même que ça enrichira la réflexion d'autres personnes dans leur developpement.
 
@@ -22,7 +22,7 @@ L'objectif de cette partie est de présenter le processus créatif derrière le 
 
 Dès le début, notre idée a été de partir sur un jeu simple, pour plusieurs raisons. La première est que nous voulions pouvoir terminer le jeu malgré le temps limité (1 mois et demi) et le fait qu'on découvre babylon.js. La deuxième, c'est que nous pensons qu'un jeu n'a pas besoin d'être complexe pour être amusant, au contraire, cela peut surcharger le joueur ou déborder les devs si c'est mal maitrisé. Enfin, nous voulions que n'importe qui puisse y jouer, peu importe que la personne ait déjà joué aux jeux vidéos ou non.
 
-Nous avons alors décidé de faire un "puzzle-game", proche d'un sokoban. Un sokoban, c'est un style de jeu où l'on doit pousser des caisses pour les placer au bon endroit. L'idée était d'adapter ce style en 3d, donc pousser une caisse dans le vide la fait tomber et nous permet de marcher dessus, et donc de se créer des chemins. Le but sera donc d'atteindre une arrivée en se créant un chemin avec les caisses.
+Nous avons alors décidé de faire un "puzzle-game", proche d'un sokoban. Un sokoban, c'est un style de jeu où l'on doit pousser des caisses pour les placer au bon endroit. L'idée était d'adapter ce style en 3D, donc pousser une caisse dans le vide la fait tomber et nous permet de marcher dessus, et donc de se créer des chemins. Le but sera donc d'atteindre une arrivée en se créant un chemin avec les caisses.
 
 Cette idée est intégrable dans n'importe quel environnement dont dreamland, le thème de cette année, mais il fallait pour nous qu'une mécanique découle de ce monde onirique. Nous avons alors décidé qu'il y aurait un autre monde, un monde parallèle, le monde cauchemar dans lequel on pourrait pafois basculer.
 
